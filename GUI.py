@@ -21,7 +21,6 @@ window.geometry('425x110+78+78')
 # Create functions.
 
 def run():
-    print(window.geometry())
     global LENGTH, TIME, DELAY, CPS, STOP
     
     if STOP:
@@ -52,6 +51,14 @@ def wait():
     time.sleep(int(LENGTH))
     STOP = True
 
+def current_clicked():
+    x_location_entry.config(state='disabled')
+    y_location_entry.config(state='disabled')
+
+def specific_clicked():
+    x_location_entry.config(state='normal')
+    y_location_entry.config(state='normal')
+
 # Create the widgets.
 
 length_label = Label(text='Length')
@@ -68,8 +75,15 @@ side_label = Label(text='Mouse Button')
 side_option = OptionMenu(window, side, "Left", "Right")
 
 location = StringVar()
+location.set("current_location")
+
 location_label = Label(text='Cursor position')
-current_location_button = Radiobutton(variable=location, value='current_location', text='Current Location')
+
+current_location_button = Radiobutton(variable=location, value='current_location', text='Current Location', command=current_clicked)
+
+specific_location_button = Radiobutton(variable=location, value='specific_location', text='Specific Location', state="active", command=specific_clicked)
+x_location_entry = Entry(width=4, state='disabled')
+y_location_entry = Entry(width=4, state='disabled')
 
 start_button = Button(text='Start', command=run)
 
@@ -90,7 +104,12 @@ side_label.grid(column=3, row=0, padx=8)
 side_option.grid(column=4, row=0)
 
 location_label.grid(column=3, row=1)
+
 current_location_button.grid(column=3, row=2, padx=8)
+
+specific_location_button.grid(column=3, row=3)
+x_location_entry.grid(column=4, row=3)
+y_location_entry.grid(column=5, row=3)
 
 # Run the main loop of the window.
 window.mainloop()
