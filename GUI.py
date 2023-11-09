@@ -6,7 +6,7 @@ import threading
 # Create and initialize our main variables.
 
 LENGTH = TIME = DELAY = CPS = SIDE = X = Y = 0.0
-STOP = True
+STOPED = True
 
 # Create the main window.
 window = Tk()
@@ -21,35 +21,44 @@ window.geometry('425x110+78+78')
 # Create functions.
 
 def run():
-    global LENGTH, TIME, DELAY, CPS, STOP
+    global LENGTH, TIME, DELAY, CPS, STOPED
     
-    if STOP:
+    if STOPED:
         LENGTH = length_entry.get()
         DELAY = delay_entry.get()
         CPS = cps_entry.get()
-        threading.Thread(target=start).start()
+        REPEAT = int(thread_entry.get())
+        for i in range(REPEAT):
+            print(i)
+            threading.Thread(target=start).start()
 
 def start():
-    global STOP, side
+    global STOPED, side
     time.sleep(int(DELAY))
-    STOP = False
+    STOPED = False
     pyautogui.PAUSE = 0
     threading.Thread(target=wait).start()
     while True:
-        if not STOP:
+        if not STOPED:
             if side.get() == 'Right':
-                pyautogui.rightClick()
+                if location.get() == 'current_location':
+                    pyautogui.rightClick()
+                else:
+                    pyautogui.rightClick(x=float(x_location_entry.get()), y=float(y_location_entry.get()))
                 time.sleep(1 / float(CPS))
             else:
-                pyautogui.leftClick()
+                if location.get() == 'current_location':
+                    pyautogui.leftClick()
+                else:
+                    pyautogui.leftClick(x=float(x_location_entry.get()), y=float(y_location_entry.get()))
                 time.sleep(1 / float(CPS))
         else:
             break
 
 def wait():
-    global STOP, LENGTH
+    global STOPED, LENGTH
     time.sleep(int(LENGTH))
-    STOP = True
+    STOPED = True
 
 def current_clicked():
     x_location_entry.config(state='disabled')
@@ -59,6 +68,23 @@ def specific_clicked():
     x_location_entry.config(state='normal')
     y_location_entry.config(state='normal')
 
+def handle_focus_in_x(_):
+    x_location_entry.delete(0, END)
+    x_location_entry.config(fg='black')
+
+def handle_focus_out_x(_):
+    x_location_entry.delete(0, END)
+    x_location_entry.config(fg='grey')
+    x_location_entry.insert(0, "x")
+
+def handle_focus_in_y(_):
+    y_location_entry.delete(0, END)
+    y_location_entry.config(fg='black')
+
+def handle_focus_out_y(_):
+    y_location_entry.delete(0, END)
+    y_location_entry.config(fg='grey')
+    y_location_entry.insert(0, "y")
 # Create the widgets.
 
 length_label = Label(text='Length')
@@ -81,9 +107,12 @@ location_label = Label(text='Cursor position')
 
 current_location_button = Radiobutton(variable=location, value='current_location', text='Current Location', command=current_clicked)
 
-specific_location_button = Radiobutton(variable=location, value='specific_location', text='Specific Location', state="active", command=specific_clicked)
+specific_location_button = Radiobutton(variable=location, value='specific_location', text='Specific Location(x,y)', state="active", command=specific_clicked)
 x_location_entry = Entry(width=4, state='disabled')
 y_location_entry = Entry(width=4, state='disabled')
+
+thread_label = Label(text='Threads')
+thread_entry = Entry()
 
 start_button = Button(text='Start', command=run)
 
@@ -98,7 +127,10 @@ delay_entry.grid(column=1, row=1)
 cps_label.grid(column=0, row=2)
 cps_entry.grid(column=1, row=2)
 
-start_button.grid(column=0, row=3)
+thread_label.grid(column=0, row=3)
+thread_entry.grid(column=1, row=3)
+
+start_button.grid(column=0, row=4)
 
 side_label.grid(column=3, row=0, padx=8)
 side_option.grid(column=4, row=0)
