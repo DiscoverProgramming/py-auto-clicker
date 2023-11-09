@@ -29,7 +29,6 @@ def run():
         CPS = cps_entry.get()
         REPEAT = int(thread_entry.get())
         for i in range(REPEAT):
-            print(i)
             threading.Thread(target=start).start()
 
 def start():
