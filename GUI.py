@@ -16,7 +16,7 @@ window.title('Auto Clicker')
 
 # Set the windows size.
 
-window.geometry('425x110+78+78')
+window.geometry('462x133+78+78')
 
 # Create functions.
 
